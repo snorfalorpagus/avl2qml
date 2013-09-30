@@ -121,8 +121,11 @@ class ODBObject_Legend(ODBObject):
     '''Legend'''
     def resolve_references(self):
         self.resolve('symbols', 'Symbols')
-        self.resolve('field_names', 'FieldNames')
         self.resolve('classes', 'Class')
+        try:
+            self.resolve('field_names', 'FieldNames')
+        except KeyError:
+            pass
 
 class ODBObject_LClass(ODBObject):
     '''Legend class'''

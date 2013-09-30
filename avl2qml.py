@@ -21,7 +21,10 @@ def avl2qml(data):
     # create qml style document
     qgis = ET.fromstring('<qgis version="2.0.1-Dufour" minimumScale="-4.65661e-10" maximumScale="1e+08" minLabelScale="0" maxLabelScale="1e+08" hasScaleBasedVisibilityFlag="0" scaleBasedLabelVisibilityFlag="0" />')
     renderer = ET.SubElement(qgis, 'renderer-v2', {'symbollevels': '0'})
-    renderer.attrib['attr'] = legend.field_names.attrs['S']
+
+    # include field name, if it's specified
+    if hasattr(legend, 'field_names'):
+        renderer.attrib['attr'] = legend.field_names.attrs['S']
 
     if legend.attrs['LegType'] == '0x02':
         # graduated symbols
