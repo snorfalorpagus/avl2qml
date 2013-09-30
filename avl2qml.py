@@ -6,10 +6,11 @@ avl2qml - module for converting ArcView 3.x Legends (.avl) to QGIS styles (.qml)
 
 import argparse
 import xml.etree.ElementTree as ET
+import os
 
 import pyodb
 
-def avl2qml(data):
+def avl2qml(data, shapefile=None):
     # parse avl
     odb = pyodb.ODB(data)
     legend = odb.objects[1].attrs['Roots'] # assumes legend is the first root
@@ -24,7 +25,18 @@ def avl2qml(data):
 
     # include field name, if it's specified
     if hasattr(legend, 'field_names'):
-        renderer.attrib['attr'] = legend.field_names.attrs['S']
+        field_name = legend.field_names.attrs['S']
+        if shapefile is not None:
+            # attempt to correct case of field name
+            import ogr
+            ds = ogr.Open(shapefile)
+            layer = ds.GetLayer()
+            defn = layer.GetLayerDefn()
+            for n in range(0, defn.GetFieldCount()):
+                name = defn.GetFieldDefn(n).GetName()
+                if field_name.lower() == name.lower():
+                    field_name = name
+        renderer.attrib['attr'] = field_name
 
     if legend.attrs['LegType'] == '0x02':
         # graduated symbols
@@ -213,6 +225,7 @@ def indent(elem, level=0):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Convert an ArcView 3.x Legend (AVL) to a QGIS legend (QML)')
     parser.add_argument('avl', nargs=1, help='path to *.avl')
+    parser.add_argument('--shapefile', nargs=1, required=False, default=[None], help='path to *.shp, used for correcting field name case')
     args = parser.parse_args()
 
     # read avl file
@@ -220,6 +233,6 @@ if __name__ == '__main__':
     data = f.read()
     f.close()
 
-    qml = avl2qml(data)
+    qml = avl2qml(data, shapefile=args.shapefile[0])
 
     print(qml)

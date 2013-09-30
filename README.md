@@ -12,7 +12,9 @@ See ```python avl2qml.py --help``` for more information.
 
 ### Dependencies
 
-The program only uses modules included in the standard library and has been tested on Python 2.7 and 3.3.
+The program optionally uses the `ogr` module to correct the case of the field name specified in the legend.
+
+It has been tested with Python 2.7 and 3.3.
 
 ### Licence
 
