@@ -118,7 +118,7 @@ def avl2qml(data):
                     'offset_unit': 'MM',
                     'style': 'solid',
                     'style_border': 'solid',
-                    'width_border': str(lclass.symbol.outlinewidth),
+                    'width_border': str(lclass.symbol.outlinewidth*0.26),
                 }
                 if 'Stipple' not in lclass.symbol.attrs:
                     properties['color'] = ','.join([str(x) for x in lclass.symbol.color.rgba_8bit])
@@ -168,7 +168,7 @@ def avl2qml(data):
                         'offset_unit': 'MM',
                         'penstyle': 'solid',
                         'use_custom_dash': '0',
-                        'width': str(lclass.symbol.outlinewidth),
+                        'width': str(lclass.symbol.outlinewidth*0.26),
                         'width_unit': 'MM',
                     }
                     for k,v in list(properties.items()):
