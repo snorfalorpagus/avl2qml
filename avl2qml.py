@@ -47,8 +47,15 @@ def avl2qml(data):
 
                 rng = ET.SubElement(ranges, 'range')
                 rng.attrib['symbol'] = str(n)
-                rng.attrib['lower'] = str(lclass.attrs['MinNum'])
-                rng.attrib['upper'] = str(lclass.attrs['MaxNum'])
+                # HACK: QGIS doesn't match '1.0' to '1'
+                if lclass.attrs['MinNum'] == int(lclass.attrs['MinNum']):
+                    rng.attrib['lower'] = str(int(lclass.attrs['MinNum']))
+                else:
+                    rng.attrib['lower'] = str(lclass.attrs['MinNum'])
+                if lclass.attrs['MaxNum'] == int(lclass.attrs['MaxNum']):
+                    rng.attrib['upper'] = str(int(lclass.attrs['MaxNum']))
+                else:
+                    rng.attrib['upper'] = str(lclass.attrs['MaxNum'])
                 rng.attrib['label'] = lclass.label
 
             elif legend.attrs['LegType'] == '0x08':
