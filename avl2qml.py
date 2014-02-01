@@ -42,6 +42,9 @@ def avl2qml(data, shapefile=None, field_name=None):
     else:
         renderer.attrib['attr'] = field_name
 
+    if legend.attrs['LegType'] == '0x01':
+        # single symbol
+        renderer.attrib['type'] = 'singleSymbol'
     if legend.attrs['LegType'] == '0x02':
         # graduated symbols
         ranges = ET.SubElement(renderer, 'ranges')
@@ -59,7 +62,11 @@ def avl2qml(data, shapefile=None, field_name=None):
 
             # define class
 
-            if legend.attrs['LegType'] == '0x02':
+            if legend.attrs['LegType'] == '0x01':
+
+                pass # nothing to do here
+
+            elif legend.attrs['LegType'] == '0x02':
 
                 rng = ET.SubElement(ranges, 'range')
                 rng.attrib['symbol'] = str(n)

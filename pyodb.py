@@ -40,6 +40,9 @@ class ODB(object):
         if legend is not None:
             symlist = legend.symbols
             symbol_idx = 0
+            if hasattr(legend.classes, '__iter__') is False:
+                legend.classes = [legend.classes]
+                symlist.symbols = [symlist.symbols]
             for legend_idx in range(0, len(legend.classes)):
                 if 'IsNoData' not in legend.classes[legend_idx].attrs:
                     legend.classes[legend_idx].symbol = symlist.symbols[symbol_idx]
