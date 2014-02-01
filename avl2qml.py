@@ -11,7 +11,7 @@ import re
 
 import pyodb
 
-def avl2qml(data, shapefile=None):
+def avl2qml(data, shapefile=None, field_name=None):
     # parse avl
     odb = pyodb.ODB(data)
     legend = odb.objects[1].attrs['Roots'] # assumes legend is the first root
@@ -24,19 +24,22 @@ def avl2qml(data, shapefile=None):
     qgis = ET.fromstring('<qgis version="2.0.1-Dufour" minimumScale="-4.65661e-10" maximumScale="1e+08" minLabelScale="0" maxLabelScale="1e+08" hasScaleBasedVisibilityFlag="0" scaleBasedLabelVisibilityFlag="0" />')
     renderer = ET.SubElement(qgis, 'renderer-v2', {'symbollevels': '0'})
 
-    # include field name, if it's specified
-    if hasattr(legend, 'field_names'):
-        field_name = legend.field_names.attrs['S']
-        if shapefile is not None:
-            # attempt to correct case of field name
-            import ogr
-            ds = ogr.Open(shapefile)
-            layer = ds.GetLayer()
-            defn = layer.GetLayerDefn()
-            for n in range(0, defn.GetFieldCount()):
-                name = defn.GetFieldDefn(n).GetName()
-                if field_name.lower() == name.lower():
-                    field_name = name
+    if field_name is None:
+        # include field name, if it's specified
+        if hasattr(legend, 'field_names'):
+            field_name = legend.field_names.attrs['S']
+            if shapefile is not None:
+                # attempt to correct case of field name
+                import ogr
+                ds = ogr.Open(shapefile)
+                layer = ds.GetLayer()
+                defn = layer.GetLayerDefn()
+                for n in range(0, defn.GetFieldCount()):
+                    name = defn.GetFieldDefn(n).GetName()
+                    if field_name.lower() == name.lower():
+                        field_name = name
+            renderer.attrib['attr'] = field_name
+    else:
         renderer.attrib['attr'] = field_name
 
     if legend.attrs['LegType'] == '0x02':
@@ -227,6 +230,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Convert an ArcView 3.x Legend (AVL) to a QGIS legend (QML)')
     parser.add_argument('avl', nargs=1, help='Path to *.avl')
     parser.add_argument('-p', dest='stdout', action='store_const', const=True, default=False, help='Print to STDOUT instead of writing to file')
+    parser.add_argument('-f', '--field', dest='field', nargs=1, required=False, default=[None], help='Manually override field name')
     parser.add_argument('--shp', nargs=1, required=False, default=[None], help='Path to *.shp, used for correcting field name case')
     args = parser.parse_args()
 
@@ -236,7 +240,7 @@ if __name__ == '__main__':
     f.close()
 
     # convert the avl to qml
-    qml = avl2qml(data, shapefile=args.shp[0])
+    qml = avl2qml(data, shapefile=args.shp[0], field_name=args.field[0])
 
     # write output
     if args.stdout is False:
