@@ -7,6 +7,7 @@ avl2qml - module for converting ArcView 3.x Legends (.avl) to QGIS styles (.qml)
 import argparse
 import xml.etree.ElementTree as ET
 import os
+import re
 
 import pyodb
 
@@ -224,8 +225,9 @@ def indent(elem, level=0):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Convert an ArcView 3.x Legend (AVL) to a QGIS legend (QML)')
-    parser.add_argument('avl', nargs=1, help='path to *.avl')
-    parser.add_argument('--shapefile', nargs=1, required=False, default=[None], help='path to *.shp, used for correcting field name case')
+    parser.add_argument('avl', nargs=1, help='Path to *.avl')
+    parser.add_argument('-p', dest='stdout', action='store_const', const=True, default=False, help='Print to STDOUT instead of writing to file')
+    parser.add_argument('--shp', nargs=1, required=False, default=[None], help='Path to *.shp, used for correcting field name case')
     args = parser.parse_args()
 
     # read avl file
@@ -233,6 +235,14 @@ if __name__ == '__main__':
     data = f.read()
     f.close()
 
-    qml = avl2qml(data, shapefile=args.shapefile[0])
+    # convert the avl to qml
+    qml = avl2qml(data, shapefile=args.shp[0])
 
-    print(qml)
+    # write output
+    if args.stdout is False:
+        filename = re.sub('\.avl', '.qml', args.avl[0], re.IGNORECASE)
+        f = open(filename, 'wb')
+        f.write(qml.encode('utf-8'))
+        f.close()
+    else:
+        print(qml)
