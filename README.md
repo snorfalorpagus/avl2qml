@@ -6,7 +6,7 @@ The code is very much in development. It has only had limited testing; as such t
 
 ### Usage
 
-Basic usage: ```python avl2qml.py arcviewlegend.avl > qgislegend.qml```
+Basic usage: ```python avl2qml.py arcviewlegend.avl```
 
 See ```python avl2qml.py --help``` for more information.
 
