@@ -134,7 +134,10 @@ class ODBObject_LClass(ODBObject):
     '''Legend class'''
     def __init__(self, *args, **kwargs):
         ODBObject.__init__(self, *args, **kwargs)
-        self.label = self.attrs['Label']
+        try:
+            self.label = self.attrs['Label']
+        except KeyError:
+            self.label = None
 
 class ODBObject_SymList(ODBObject):
     '''Symbol list'''
@@ -155,7 +158,10 @@ class ODBObject_BLnSym(ODBObject):
     '''BLine symbol''' # B = basic?
     def resolve_references(self):
         self.resolve('color', 'Color')
-        self.width = self.attrs['Width']
+        try:
+            self.width = self.attrs['Width']
+        except KeyError:
+            self.width = None
 
 class ODBObject_CLnSym(ODBObject):
     '''CLine symbol''' # C = complex?

@@ -79,7 +79,10 @@ def avl2qml(data, shapefile=None, field_name=None):
                     rng.attrib['upper'] = str(int(lclass.attrs['MaxNum']))
                 else:
                     rng.attrib['upper'] = str(lclass.attrs['MaxNum'])
-                rng.attrib['label'] = lclass.label
+                if lclass.label is not None:
+                    rng.attrib['label'] = lclass.label
+                else:
+                    rng.attrib['label'] = ''
 
             elif legend.attrs['LegType'] == '0x08':
 
@@ -93,7 +96,10 @@ def avl2qml(data, shapefile=None, field_name=None):
                         category.attrib['value'] = str(lclass.attrs['MinNum'])
                 else:
                     category.attrib['value'] = lclass.attrs['MinStr']
-                category.attrib['label'] = lclass.label
+                if lclass.label is not None:
+                    category.attrib['label'] = lclass.label
+                else:
+                    category.attrib['label'] = ''
 
             # define symbol for class
 
