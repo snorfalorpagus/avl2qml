@@ -103,13 +103,16 @@ def avl2qml(data, shapefile=None, field_name=None):
                 else:
                     category.attrib['label'] = ''
 
+            if type(lclass.symbol) is pyodb.ODBObject:
+                raise NotImplementedError('Symbol {} has not yet been implemented.'.format(lclass.symbol.object_type))
+
             # define symbol for class
 
             symbol = ET.SubElement(symbols, 'symbol')
             symbol.attrib['name'] = str(n)
             symbol.attrib['alpha'] = '1'
 
-            if legend.attrs['SymType'] == '0x01':
+            if legend.sym_type == '0x01':
 
                 # symbol type is line
                 symbol.attrib['type'] = 'line'
@@ -140,7 +143,7 @@ def avl2qml(data, shapefile=None, field_name=None):
                         prop.attrib['k'] = k
                         prop.attrib['v'] = v
 
-            elif legend.attrs['SymType'] == '0x02':
+            elif legend.sym_type == '0x02':
 
                 # symbol type is fill
                 symbol.attrib['type'] = 'fill'
@@ -213,6 +216,48 @@ def avl2qml(data, shapefile=None, field_name=None):
                         prop = ET.SubElement(layer3, 'prop')
                         prop.attrib['k'] = k
                         prop.attrib['v'] = v
+
+            else:
+
+                # symbol type is (probably) marker
+                symbol.attrib['type'] = 'marker'
+
+                layer1 = ET.SubElement(symbol, 'layer')
+                layer1.attrib['pass'] = '0'
+                layer1.attrib['class'] = 'SimpleMarker'
+                layer1.attrib['locked'] = '0'
+
+                properties = {
+                    'horizontal_anchor_point': '1',
+                    'name': 'circle',
+                    'offset': '0,0',
+                    'offset_unit': 'MM',
+                    'outline_style': 'solid',
+                    'outline_width': '0',
+                    'outline_width_unit': 'MM',
+                    'scale_method': 'area',
+                    'size_unit': 'MM',
+                    'vertical_anchor_point': '1'
+                }
+
+                if 'Size' in lclass.symbol.attrs:
+                    properties['size'] = '{:.2f}'.format(float(lclass.symbol.attrs['Size']) / 5.0)
+                else:
+                    properties['size'] = '2.0' # default size
+
+                # FIXME: are these the wrong way around?
+                properties['color'] = ','.join([str(x) for x in lclass.symbol.color.rgba_8bit])
+                properties['color_border'] = ','.join([str(x) for x in lclass.symbol.bgcolor.rgba_8bit])
+
+                if 'Angle' in lclass.symbol.attrs:
+                    properties['angle'] = '{:.0f}'.format(lclass.symbol.attrs['Angle'])
+                else:
+                    properties['angle'] = '0'
+
+                for k,v in list(properties.items()):
+                    prop = ET.SubElement(layer1, 'prop')
+                    prop.attrib['k'] = k
+                    prop.attrib['v'] = v
 
             n += 1
 

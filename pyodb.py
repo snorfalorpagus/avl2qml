@@ -129,6 +129,10 @@ class ODBObject_Legend(ODBObject):
             self.resolve('field_names', 'FieldNames')
         except KeyError:
             pass
+        try:
+            self.sym_type = self.attrs['SymType']
+        except KeyError:
+            self.sym_type = None
 
 class ODBObject_LClass(ODBObject):
     '''Legend class'''
@@ -143,6 +147,12 @@ class ODBObject_SymList(ODBObject):
     '''Symbol list'''
     def resolve_references(self):
         self.resolve('symbols', 'Child')
+
+class ODBObject_BMkSym(ODBObject):
+    '''Polygon symbol'''
+    def resolve_references(self):
+        self.resolve('color', 'Color')
+        self.resolve('bgcolor', 'BgColor')
 
 class ODBObject_BShSym(ODBObject):
     '''Polygon symbol'''
@@ -174,6 +184,7 @@ special_objects = {
     'LClass': ODBObject_LClass,
     'TClr': ODBObject_TClr,
     'SymList': ODBObject_SymList,
+    'BMkSym': ODBObject_BMkSym,
     'BShSym': ODBObject_BShSym,
     'BLnSym': ODBObject_BLnSym,
     'CLnSym': ODBObject_CLnSym,
