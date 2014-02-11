@@ -94,8 +94,10 @@ def avl2qml(data, shapefile=None, field_name=None):
                         category.attrib['value'] = str(int(lclass.attrs['MinNum']))
                     else:
                         category.attrib['value'] = str(lclass.attrs['MinNum'])
-                else:
+                elif 'MinStr' in lclass.attrs:
                     category.attrib['value'] = lclass.attrs['MinStr']
+                else:
+                    category.attrib['value'] = str(lclass.attrs['Label'])
                 if lclass.label is not None:
                     category.attrib['label'] = lclass.label
                 else:
